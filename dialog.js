@@ -1,88 +1,73 @@
-var Dialog = function (parent) {
-    var parentDom = parent == undefined ? document.body : document.querySelector(parent);
+class Dialog {
+            constructor() {
 
-    if (!parentDom.querySelector('.dialog-mask')) {
-        var mask = document.createElement('div');
-        mask.className = 'dialog-mask';
-        parentDom.appendChild(mask);
-        this.mask = mask;
-    }
-    if (!parentDom.querySelector('.dialog')) {
-        var dialog = document.createElement('div');
-        dialog.className = 'dialog';
-        parentDom.appendChild(dialog);
-        this.dialog = dialog;
-    }
+                this.show = this.show.bind(this);
+                
+            }
 
-    this.title = '提示信息';
-    /*'<span class="dialog-btn certain">确定</span>' +
-     '<span class="dialog-btn cancel">取消</span>' +*/
-};
-Dialog.prototype = {
-    tpl: '<div class="dialog-wrap">' +
-    '<div class="dialog-title">{title}</div>' +
-    '<div class="dialog-content">' +
-    '<header class="dialog-info">{msg}</header>' +
-    '<div class="dialog-action">{btn}</div></div></div>',
-    alert: function (msg, callback, title) {
-        if (arguments.length == 3) {
-            this.title = title;
+            tpl(options) {
+
+                let { title, info } = options;
+                
+                return `
+                
+                    <div class="dialog-container">
+                        <div class="dialog-title">${title}</div>
+                        <div class="dialog-content">${info}</div>
+                        <div class="dialog-btns">
+                            <button class="certain">确定</button><button class="cancel">取消</button>
+                        </div>
+                    </div>
+                
+                `
+            }
+
+            createElement(type, props = { class: '' }, text = '') {
+                let el = document.createElement(type);
+                for (let key in props) {
+                    el.setAttribute(key, props[key])
+                }
+                el.innerHTML = text
+                return el
+            }
+
+            bindEvent(callback) {
+                this.layout.querySelector('.certain').addEventListener('click', () => {
+                    this.hide();
+                    callback && callback('弹出框被关闭了')
+                })
+                this.layout.querySelector('.cancel').addEventListener('click', () => {
+                    this.hide()
+                })
+            }
+
+            init(options) {
+                let layout = document.querySelector('.layout');
+                let body = document.querySelector('body');
+                //console.log(options)
+                if (!layout) {
+                    this.layout = layout = this.createElement('div', { class: 'layout' }, this.tpl(options));
+                    this.container = this.layout.querySelector('.dialog-container');
+                    this.bindEvent(options.callback)
+                    body.appendChild(layout)
+
+                } else {
+
+                }
+            }
+
+            show(options = { title: '这里是title', info: '这是提示信息' }) {
+                this.init(options);
+
+                //reset css
+                this.layout.style.background = 'rgba(0,0,0,0.7)';
+                this.container.style.transform = 'translate3d(-50%, -50%, 0) scale(1)';
+                this.container.style.opacity = '1';
+                
+            }
+
+            hide() {
+                document.querySelector('body').removeChild(this.layout);
+            }
+
         }
-        this.tpl = this.tpl.replace('{btn}', '<span class="dialog-btn certain">确定</span>')
-            .replace('{msg}', msg).replace('{title}', this.title);
-
-        this.dialog.innerHTML = this.tpl;
-        this.callback = callback != undefined ? callback : function () {
-        };
-        this.show();
-    },
-    confirm: function (msg, callback, title) {
-        if (arguments.length == 3) {
-            this.title = title;
-        }
-        this.tpl = this.tpl.replace('{btn}', '<span class="dialog-btn certain">确定</span><span class="dialog-btn cancel">取消</span>')
-            .replace('{msg}', msg).replace('{title}', this.title);
-        this.dialog.innerHTML = this.tpl;
-
-        this.callback = callback != undefined ? callback : function () {
-        };
-        this.show();
-    },
-    bindEvent: function () {
-        this.dialog.querySelector('.certain').addEventListener('click', function () {
-            this.hide();
-            this.callback();
-        }.bind(this), false);
-        if (this.dialog.querySelector('.cancel')) {
-            this.dialog.querySelector('.cancel').addEventListener('click', function () {
-                this.hide();
-            }.bind(this), false);
-        }
-
-    },
-    show: function () {
-        this.mask.className = this.mask.className + ' mask-show';
-        this.dialog.className = this.dialog.className + ' dialog-show';
-        setTimeout(function () {
-            this.mask.style.opacity = '0.8';
-        }.bind(this), 0);
-        this.bindEvent();
-    },
-    hide: function () {
-        var classNames = this.mask.classList;
-        this.mask.className = classNames[0];
-        this.mask.style = '';
-        classNames = this.dialog.classList;
-        this.dialog.className = classNames[0];
-    }
-};
-
-
-var dialog = new Dialog();
-document.querySelector('button').onclick = function () {
-
-    dialog.alert('信息有误，请重新填写', function () {
-        console.log('您点击了确定')
-    });
-};
-

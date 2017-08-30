@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .layout {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            transition: background-color .3s linear;
+        }
+
+        .layout-active{
+            background: rgba(0, 0, 0, 0.7)
+        }
+
+        .dialog-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate3d(-50%, -50%, 0) scale(0.5);
+            width: 60%;
+            min-height: 100px;
+            background: #ffffff;
+            opacity: 0.5;
+        }
+
+        .dialog-container-active{
+            transition: all .2s ease-in-out;
+            transform: scale(1) translate3d(-50%, -50%, 0);
+            opacity: 1;
+        }
+
+        .dialog-title {
+            line-height: 2;
+            border-bottom: 1px solid #ccc;
+            text-indent: 10px;
+        }
+
+        .dialog-content {
+            padding: 10px;
+            line-height: 1.6;
+        }
+
+        .dialog-btns {
+            min-height: 60px;
+            text-align: center;
+            line-height: 60px;
+        }
+
+        .dialog-btns button {
+            background: #ffffff;
+            border: 1px seagreen solid;
+            padding: 5px 15px;
+            margin: 0 10px
+        }
+    </style>
+</head>
+
+<body>
+    <button class="popular">点我弹出普通提示框</button>
+
+
+    <button class="awsome">点我弹出炫酷提示框</button>
+    <script src="dialog.js"></script>
+    <script src="AwsomeDialog.js"></script>
+    <script>
+        
+        const DialogCase = new Dialog();
+
+        const AwsomeDialogCase = new AwsomeDialog();
+
+        document.querySelector('.popular').addEventListener('click', function () {
+            DialogCase.show({
+                title: 'popular modal',
+                info: '这是我的第一个class创建实例',
+                callback: function (reback) {
+                    console.log(reback)
+                }
+            })
+        })
+
+        
+        document.querySelector('.awsome').addEventListener('click', function () {
+            AwsomeDialogCase.show({
+                title: 'awsome modal',
+                info: '这是我的第一个class extends创建实例',
+                callback: function (reback) {
+                    console.log(reback)
+                }
+            })
+        })
+    </script>
+
+</body>
+
+</html>
